@@ -1,16 +1,15 @@
 // src/pages/ProductPage.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import allProducts from "../data/allProducts";
 import { motion } from "framer-motion";
-import { Star, ArrowLeft } from "lucide-react";
+import { Star, ArrowLeft, ArrowUpDown } from "lucide-react";
 
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const product = allProducts.find((p) => p.id === Number(id));
 
-  // 🧭 Scroll to top when product changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
@@ -23,32 +22,53 @@ export default function ProductPage() {
     );
   }
 
-  // ✅ WhatsApp setup
   const phoneNumber = "917356179857";
   const message = `👋 Hello! I'm interested in this product:\n\n🛍️ *${product.name}*\n🏷️ Brand: ${product.brand}\n💰 Price: ${product.price}\n\nCan you share more details?`;
   const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
     message
   )}`;
 
-  // 🎯 Find similar products (same brand or category)
-  const similarProducts = allProducts
-    .filter(
-      (p) =>
-        p.id !== product.id &&
-        (p.brand === product.brand || p.category === product.category)
-    )
-    .slice(0, 4); // limit to 4 items
+  const baseSimilar = allProducts.filter(
+    (p) =>
+      p.id !== product.id &&
+      (p.brand === product.brand || p.category === product.category)
+  );
+
+  const [sortOption, setSortOption] = useState("default");
+
+  const similarProducts = useMemo(() => {
+    const parsePrice = (price) => {
+      if (!price) return 0;
+      return parseFloat(price.toString().replace(/[^\d.]/g, ""));
+    };
+
+    let sorted = [...baseSimilar];
+
+    switch (sortOption) {
+      case "price-asc":
+        sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+        break;
+      case "price-desc":
+        sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+        break;
+      case "name":
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      default:
+        break;
+    }
+
+    return sorted;
+  }, [sortOption, baseSimilar]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-100 via-white to-neutral-50 flex flex-col items-center justify-start px-4 sm:px-6 md:px-12 pt-28 pb-16 space-y-14">
-      {/* 🌟 Product Card */}
       <motion.div
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="max-w-4xl w-full grid md:grid-cols-2 gap-8 items-center bg-white rounded-2xl shadow-lg overflow-hidden border border-neutral-200"
       >
-        {/* 🖼️ Product Image */}
         <motion.div
           initial={{ x: -30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -66,7 +86,6 @@ export default function ProductPage() {
           />
         </motion.div>
 
-        {/* 🧾 Product Details */}
         <motion.div
           initial={{ x: 30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -124,17 +143,35 @@ export default function ProductPage() {
           transition={{ delay: 0.2 }}
           className="w-full max-w-6xl border-t border-neutral-200 pt-10"
         >
-          <h2 className="text-xl sm:text-2xl font-semibold text-neutral-900 mb-5">
-            Similar Products
-          </h2>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
+            <h2 className="text-xl sm:text-2xl font-semibold text-neutral-900">
+              Similar Products
+            </h2>
 
+            {/* 🔽 Sort Dropdown */}
+            <div className="flex items-center gap-2 text-sm text-neutral-600">
+              <ArrowUpDown size={16} />
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                className="border border-neutral-300 rounded-md px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-neutral-400 transition"
+              >
+                <option value="default">Sort by</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="name">Name A–Z</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Product Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
             {similarProducts.map((item) => (
               <motion.div
                 key={item.id}
                 whileHover={{ scale: 1.03 }}
                 className="bg-white border border-neutral-200 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-all"
-                onClick={() => navigate(`/products/${item.id}`)} // ✅ FIXED HERE
+                onClick={() => navigate(`/products/${item.id}`)}
               >
                 <img
                   src={item.image}

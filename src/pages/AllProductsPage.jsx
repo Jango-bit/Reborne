@@ -1,6 +1,5 @@
-
-
-import React, { useState } from "react";
+// src/pages/AllProductsPage.jsx
+import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
@@ -13,19 +12,32 @@ export default function AllProductsPage() {
   const [brand, setBrand] = useState("All");
   const [sort, setSort] = useState("Featured");
 
-  // 🧠 Filtering Logic
-  const filteredProducts = allProducts
-    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-    .filter((p) => (category === "All" ? true : p.category === category))
-    .filter((p) => (brand === "All" ? true : p.brand === brand))
-    .sort((a, b) => {
-      if (sort === "Price: Low → High") return a.priceValue - b.priceValue;
-      if (sort === "Price: High → Low") return b.priceValue - a.priceValue;
-      return 0;
-    });
+  // 🧠 Filtering + Sorting Logic (Fixed)
+  const filteredProducts = useMemo(() => {
+    // Helper to parse ₹ or $ prices to number
+    const parsePrice = (price) => {
+      if (!price) return 0;
+      return parseFloat(price.toString().replace(/[^\d.]/g, ""));
+    };
+
+    let result = allProducts
+      .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+      .filter((p) => (category === "All" ? true : p.category === category))
+      .filter((p) => (brand === "All" ? true : p.brand === brand));
+
+    // Sorting logic
+    if (sort === "Price: Low → High") {
+      result.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+    } else if (sort === "Price: High → Low") {
+      result.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+    }
+
+    return result;
+  }, [search, category, brand, sort]);
 
   return (
     <div className="relative min-h-screen bg-neutral-50 py-28 px-6 md:px-20 overflow-hidden">
+      {/* 🏷️ Title */}
       <motion.h1
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -59,10 +71,11 @@ export default function AllProductsPage() {
             className="border border-gray-300 rounded-full px-4 py-3 focus:ring-2 focus:ring-black"
           >
             <option>All</option>
+            <option>Footwear</option>
+            <option>Sneakers</option>
             <option>Shirts</option>
             <option>T-Shirts</option>
             <option>Jeans</option>
-            <option>Sneakers</option>
             <option>Accessories</option>
           </select>
 
@@ -75,6 +88,9 @@ export default function AllProductsPage() {
             <option>All</option>
             <option>Nike</option>
             <option>Adidas</option>
+            <option>Puma</option>
+            <option>Jordan</option>
+            <option>New Balance</option>
             <option>Zara</option>
             <option>Levi’s</option>
             <option>H&M</option>
@@ -129,7 +145,7 @@ export default function AllProductsPage() {
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">{product.category}</p>
                 <p className="mt-3 text-lg font-semibold text-gray-800">
-                  ₹{product.price}
+                  {product.price}
                 </p>
               </div>
 

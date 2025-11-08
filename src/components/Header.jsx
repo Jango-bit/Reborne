@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, UserRound, Menu, X } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import LogoReborne from "../assets/Images/ReborneLogo.png";
-import allProducts from "../data/Product";
+import allProducts from "../data/allProducts"; 
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,11 +48,11 @@ export default function Header() {
   // 🔹 Nav links
   const navLinks = [
     { name: "Home", onClick: handleHomeClick },
-    { name: "products", path: "/products" },
+    { name: "Products", path: "/products" },
     { name: "About", onClick: handleAboutClick },
   ];
 
-  // 🔹 Search filter
+  // ✅ FIX: use centralized allProducts for filtering
   const filteredProducts = allProducts.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -185,7 +185,7 @@ export default function Header() {
         </AnimatePresence>
       </div>
 
-      {/* 🔍 Search Overlay (below header) */}
+      {/* 🔍 Search Overlay */}
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
@@ -195,7 +195,6 @@ export default function Header() {
             transition={{ duration: 0.3 }}
             className="fixed top-[90px] left-0 right-0 bottom-0 bg-black/30 backdrop-blur-sm flex items-start justify-center z-40"
             onClick={(e) => {
-              // Close if click outside
               if (e.target === e.currentTarget) {
                 setIsSearchOpen(false);
                 setSearchTerm("");
