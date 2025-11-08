@@ -1,3 +1,5 @@
+
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -13,9 +15,7 @@ export default function AllProductsPage() {
 
   // 🧠 Filtering Logic
   const filteredProducts = allProducts
-    .filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
     .filter((p) => (category === "All" ? true : p.category === category))
     .filter((p) => (brand === "All" ? true : p.brand === brand))
     .sort((a, b) => {
@@ -102,46 +102,41 @@ export default function AllProductsPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: index * 0.05 }}
-            whileHover={{ scale: 1.03 }}
-            className="group relative bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500"
           >
-            {/* ❤️ Wishlist Icon */}
-            <div className="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur-md rounded-full p-2 hover:bg-black hover:text-white transition">
-              <Heart size={18} />
-            </div>
-
-            {/* 🖼️ Product Image */}
-            <div className="overflow-hidden rounded-t-3xl relative">
-              <motion.img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-[400px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-              />
-
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-              {/* “View Product” Button */}
-              <div className="absolute bottom-4 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                <Link
-                  to={`/products/${product.id}`}
-                  className="bg-white text-black text-sm font-semibold px-6 py-2 rounded-full shadow-md hover:bg-black hover:text-white transition"
-                >
-                  View Product
-                </Link>
+            {/* Wrap whole card with Link */}
+            <Link
+              to={`/products/${product.id}`}
+              className="group relative bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 block"
+            >
+              {/* ❤️ Wishlist Icon */}
+              <div className="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur-md rounded-full p-2 hover:bg-black hover:text-white transition">
+                <Heart size={18} />
               </div>
-            </div>
 
-            {/* 🧾 Product Info */}
-            <div className="p-6 text-center">
-              <h2 className="text-xl font-bold text-gray-900 tracking-tight group-hover:text-black transition">
-                {product.name}
-              </h2>
-              <p className="text-gray-500 text-sm mt-1">{product.category}</p>
-              <p className="mt-3 text-lg font-semibold text-gray-800">
-                ₹{product.price}
-              </p>
-            </div>
+              {/* 🖼️ Product Image */}
+              <div className="overflow-hidden rounded-t-3xl relative">
+                <motion.img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-[400px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-3xl"></div>
+              </div>
+
+              {/* 🧾 Product Info */}
+              <div className="p-6 text-center">
+                <h2 className="text-xl font-bold text-gray-900 tracking-tight group-hover:text-black transition">
+                  {product.name}
+                </h2>
+                <p className="text-gray-500 text-sm mt-1">{product.category}</p>
+                <p className="mt-3 text-lg font-semibold text-gray-800">
+                  ₹{product.price}
+                </p>
+              </div>
+
+              {/* ✨ Click overlay for interaction */}
+              <div className="absolute inset-0 rounded-3xl bg-black/5 opacity-0 group-hover:opacity-100 transition duration-300" />
+            </Link>
           </motion.div>
         ))}
       </div>
