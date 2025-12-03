@@ -1,1 +1,117 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+ themes: light --default;
+};
+
+body {
+  -webkit-font-smoothing: antialiased;
+    font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  font-family: "poppins", sans-serif;
+}
+html {
+  scroll-behavior: smooth;
+}
+body::-webkit-scrollbar {
+  width: 7px;
+}
+
+body::-webkit-scrollbar-track {
+  background-color: #e4e4e4;
+  border-radius: 100px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #b3b0ae;
+  border-radius: 100px;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+.overflow-y-min::-webkit-scrollbar {
+  width: 2px;
+}
+
+.overflow-x-min::-webkit-scrollbar {
+  width: 2px;
+  height: 1px;
+}
+
+.overflow-y-min::-webkit-scrollbar-track {
+  background-color: #efff;
+  border-radius: 100px;
+}
+
+.overflow-y-min::-webkit-scrollbar-thumb {
+  background-color: #b3b0ae;
+  border-radius: 100px;
+}
+
+.scroll-y-min::-webkit-scrollbar {
+  width: 2px;
+}
+
+.scroll-y-min::-webkit-scrollbar-track {
+  background-color: #2e2e2e;
+  border-radius: 100px;
+}
+
+.scroll-y-min::-webkit-scrollbar-thumb {
+  background-color: #3d3d3d;
+  border-radius: 100px;
+}
+
+.invisible-scroll-x::-webkit-scrollbar {
+  height: 0px;
+}
+
+.invisible-scroll-y::-webkit-scrollbar {
+  width: 0px;
+}
+
+input,
+textarea,
+select {
+  outline: none;
+}
+
+input:focus {
+  outline: none;
+}
+
+select:focus {
+  outline: none !important;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color: rgba(0, 0, 0, 0);
+  opacity: 1;
+  display: block;
+  background: url("/icons/calender.svg") no-repeat;
+  width: 20px;
+  height: 20px;
+  border-width: thin;
+  cursor: pointer;
+}
+
+.required:after {
+  content: " *";
+  color: red;
+}
+button:focus {
+  outline: none;
+  cursor: pointer;
+}
+button {
+  outline: none;
+  cursor: pointer;
+}

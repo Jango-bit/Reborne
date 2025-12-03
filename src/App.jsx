@@ -1,24 +1,26 @@
-
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Landingpage from "./home/Landingpage";
-import AllProductsPage from "./pages/AllProductsPage";
-import Layout from "./layouts/Layout";
-import ProductPage from "./pages/ProductPage";
-// import AboutPage from "./pages/AboutPage";
+import { Toaster } from "react-hot-toast";
+import QueryProvider from "./provider/QueryProvider";
+import { AppRoutes } from "./routes/AppRoutes";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Landingpage />} />
-          <Route path="/products" element={<AllProductsPage />} />
-          <Route path="/products/:id" element={<ProductPage />} />
-          {/* <Route path="/about" element={<AboutPage />} /> */}
-        </Route>
-      </Routes>
-    </Router>
+    <QueryProvider>
+      <Toaster
+        containerStyle={{ zIndex: 99999 }}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            zIndex: "99999999999999",
+          },
+        }}
+        position="top-right"
+        style={{
+          zIndex: "99999999999999",
+        }}
+      />
+
+      <AppRoutes />
+    </QueryProvider>
   );
 }
 

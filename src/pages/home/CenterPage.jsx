@@ -1,5 +1,5 @@
 import React from "react";
-import video from "../assets/Images/Video.mp4";
+import video from "/assets/Images/Video.mp4";
 
 export default function CenterPage() {
   return (

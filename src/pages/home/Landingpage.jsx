@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ShoppingCart, Heart } from "lucide-react";
-import ReborneHome from "../assets/Images/Home1.png.jpg";
-import ReborneHome1 from "../assets/Images/Home2.png.jpg";
+import ReborneHome from "/assets/Images/Home1.png.jpg";
+import ReborneHome1 from "/assets/Images/Home2.png.jpg";
 import CenterPage from "./CenterPage";
-import Products from "../data/Products";
-import AboutPage from "../pages/AboutPage";
+import Products from "../../data/Products";
+import AboutPage from "../AboutPage";
 
 export default function LandingPage() {
   const [isLiked, setIsLiked] = useState(false);
@@ -22,7 +22,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-neutral-100">
-      {/* ❌ Removed <Header /> */}
+
 
       {/* 🔹 HERO SECTION */}
       <section className="pt-28 pb-16 flex items-center justify-center bg-neutral-100 relative overflow-hidden">

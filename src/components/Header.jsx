@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, UserRound, Menu, X } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import LogoReborne from "../assets/Images/ReborneLogo.png";
-import allProducts from "../data/allProducts"; 
+import LogoReborne from "/assets/Images/ReborneLogo.png";
+import allProducts from "../data/allProducts";
+import { publicNavLinks } from "@/constants/layout";
 
-export default function Header() {
+export default function Header({ navLinks = [] }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -20,37 +21,29 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 🔹 Navigation handlers
-  const handleHomeClick = () => {
+  // 🔹 Navigation handler
+  const handleNavClick = (path) => {
     setIsMobileMenuOpen(false);
-    if (location.pathname !== "/") navigate("/");
-    else window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleAboutClick = () => {
-    setIsMobileMenuOpen(false);
-    if (location.pathname !== "/") {
-      navigate("/");
-      setTimeout(
-        () =>
-          document.getElementById("About")?.scrollIntoView({
-            behavior: "smooth",
-          }),
-        500
-      );
+    if (path === "home") {
+      if (location.pathname !== "/") navigate("/");
+      else window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      document.getElementById("About")?.scrollIntoView({
-        behavior: "smooth",
-      });
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(
+          () =>
+            document.getElementById("About")?.scrollIntoView({
+              behavior: "smooth",
+            }),
+          500
+        );
+      } else {
+        document.getElementById("About")?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
     }
   };
-
-  // 🔹 Nav links
-  const navLinks = [
-    { name: "Home", onClick: handleHomeClick },
-    { name: "Products", path: "/products" },
-    { name: "About", onClick: handleAboutClick },
-  ];
 
   // ✅ FIX: use centralized allProducts for filtering
   const filteredProducts = allProducts.filter((p) =>
@@ -73,7 +66,7 @@ export default function Header() {
           {/* 🔸 Logo */}
           <div
             className="flex items-center gap-3 group cursor-pointer"
-            onClick={handleHomeClick}
+            onClick={() => handleNavClick("home")}
           >
             <motion.img
               src={LogoReborne}
@@ -92,26 +85,26 @@ export default function Header() {
 
           {/* 🔸 Desktop Nav */}
           <nav className="hidden lg:flex gap-10 text-[15px] font-light tracking-wide">
-            {navLinks.map((item) => (
+            {navLinks?.map((item) => (
               <motion.div
-                key={item.name}
+                key={item.value}
                 whileHover={{ y: -2 }}
                 className="relative py-2 text-neutral-700 hover:text-black transition-colors duration-300"
               >
-                {item.onClick ? (
+                {item?.onClick ? (
                   <button
-                    onClick={item.onClick}
+                    onClick={() => handleNavClick(item?.value)}
                     className="text-neutral-700 hover:text-black transition-colors duration-300"
                   >
                     {item.name}
                   </button>
                 ) : (
                   <Link
-                    to={item.path}
+                    to={item?.path}
                     className="text-neutral-700 hover:text-black transition-colors duration-300"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {item.name}
+                    {item?.name}
                   </Link>
                 )}
                 <motion.span
@@ -133,12 +126,13 @@ export default function Header() {
               <Search size={22} />
             </motion.button>
 
-            <motion.button
+            <motion.a
+              href="/auth/login"
               className="hidden sm:flex p-2 rounded-full hover:bg-neutral-200 transition-all duration-300"
               whileHover={{ scale: 1.15 }}
             >
               <UserRound size={22} />
-            </motion.button>
+            </motion.a>
 
             <motion.button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -161,21 +155,21 @@ export default function Header() {
               className="lg:hidden flex flex-col gap-4 mt-4 pb-4 border-t border-neutral-300 pt-3"
             >
               {navLinks.map((item) => (
-                <motion.div key={item.name} whileHover={{ x: 6 }}>
-                  {item.onClick ? (
+                <motion.div key={item?.value} whileHover={{ x: 6 }}>
+                  {item?.onClick ? (
                     <button
-                      onClick={item.onClick}
+                      onClick={() => handleNavClick(item?.value)}
                       className="text-sm text-neutral-700 hover:text-black transition-all duration-300 flex items-center gap-2"
                     >
                       {item.name}
                     </button>
                   ) : (
                     <Link
-                      to={item.path}
+                      to={item?.path}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="text-sm text-neutral-700 hover:text-black transition-all duration-300 flex items-center gap-2"
                     >
-                      {item.name}
+                      {item?.name}
                     </Link>
                   )}
                 </motion.div>
