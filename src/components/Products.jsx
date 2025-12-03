@@ -7,7 +7,7 @@ import { basicRequest, PRODUCTS } from "@/api/api";
 
 export default function Products() {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageLimit = 1;
+  const pageLimit = 5;
   const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
   const { isLoading, error, data } = useQuery({
@@ -67,12 +67,12 @@ export default function Products() {
           View All Products
         </button>
       </div>
-
+      {console.log(data)}
       {/* Products Grid (optional preview) */}
       <div className="max-w-[1600px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
-        {products.slice(0, 5).map((product, index) => (
+        {data?.products?.map((product, index) => (
           <motion.div
-            key={product.id || index}
+            key={product?.slug || index}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{
@@ -85,18 +85,18 @@ export default function Products() {
           >
             <div className="overflow-hidden rounded-3xl bg-white shadow-sm hover:shadow-xl transition-all duration-500">
               <motion.img
-                src={product.image}
-                alt={product.name}
+                src={product?.images?.[0]?.url}
+                alt={product?.name}
                 className="w-full h-[340px] object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
               />
             </div>
 
             <div className="mt-4">
               <h2 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">
-                {product.name}
+                {product?.name}
               </h2>
-              <p className="text-gray-500 text-sm mt-1">{product.category}</p>
-              <p className="mt-2 text-gray-800 font-medium">{product.price}</p>
+              <p className="text-gray-500 text-sm mt-1">{product?.category}</p>
+              <p className="mt-2 text-gray-800 font-medium">{product?.price}</p>
             </div>
           </motion.div>
         ))}

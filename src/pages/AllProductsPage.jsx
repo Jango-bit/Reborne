@@ -15,8 +15,7 @@ export default function AllProductsPage() {
   const [sort, setSort] = useState("Featured");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageLimit = 1;
-  const [totalPages, setTotalPages] = useState(0);
+  const [pageLimit, setPageLimit] = useState(10);
   const [keywords, setKeywords] = useState(null);
   const navigate = useNavigate();
   const { isLoading, error, data } = useQuery({
@@ -34,7 +33,7 @@ export default function AllProductsPage() {
     staleTime: 0,
     cacheTime: 0,
   });
-  console.log(data);
+
 
   // 🧠 Filtering + Sorting Logic (Fixed)
   const filteredProducts = useMemo(() => {
@@ -44,10 +43,10 @@ export default function AllProductsPage() {
       return parseFloat(price.toString().replace(/[^\d.]/g, ""));
     };
 
-    let result = allProducts
-      .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-      .filter((p) => (category === "All" ? true : p.category === category))
-      .filter((p) => (brand === "All" ? true : p.brand === brand));
+    let result = data?.products
+      ?.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+      ?.filter((p) => (category === "All" ? true : p.category === category))
+      ?.filter((p) => (brand === "All" ? true : p.brand === brand));
 
     // Sorting logic
     if (sort === "Price: Low → High") {
@@ -57,8 +56,8 @@ export default function AllProductsPage() {
     }
 
     return result;
-  }, [search, category, brand, sort]);
-
+  }, [search, category, brand, sort, data]);
+  console.log(filteredProducts);
   return (
     <div className="relative min-h-screen bg-neutral-50 py-28 px-6 md:px-20 overflow-hidden">
       {/* 🏷️ Title */}
@@ -136,16 +135,16 @@ export default function AllProductsPage() {
 
       {/* 🛍️ Product Grid */}
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-12">
-        {filteredProducts.map((product, index) => (
+        {filteredProducts?.map((product, index) => (
           <motion.div
-            key={product.id}
+            key={product?.slug}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: index * 0.05 }}
           >
             {/* Wrap whole card with Link */}
             <Link
-              to={`/products/${product.id}`}
+              to={`/products/${product?.id}`}
               className="group relative bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 block"
             >
               {/* ❤️ Wishlist Icon */}
@@ -156,8 +155,8 @@ export default function AllProductsPage() {
               {/* 🖼️ Product Image */}
               <div className="overflow-hidden rounded-t-3xl relative">
                 <motion.img
-                  src={product.image}
-                  alt={product.name}
+                  src={product?.images?.[0]?.url}
+                  alt={product?.name}
                   className="w-full h-[400px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-3xl"></div>
@@ -166,11 +165,13 @@ export default function AllProductsPage() {
               {/* 🧾 Product Info */}
               <div className="p-6 text-center">
                 <h2 className="text-xl font-bold text-gray-900 tracking-tight group-hover:text-black transition">
-                  {product.name}
+                  {product?.name}
                 </h2>
-                <p className="text-gray-500 text-sm mt-1">{product.category}</p>
+                <p className="text-gray-500 text-sm mt-1">
+                  {product?.category}
+                </p>
                 <p className="mt-3 text-lg font-semibold text-gray-800">
-                  {product.price}
+                  {product?.price}
                 </p>
               </div>
 
@@ -185,7 +186,7 @@ export default function AllProductsPage() {
       <div className="text-center mt-16">
         <button
           disabled={data?.page >= data?.pages}
-          onClick={() => setCurrentPage(data?.page + 1)}
+          onClick={() => setPageLimit(data?.products?.length + 10)}
           className="px-8 py-3 border border-gray-800 rounded-full hover:bg-black hover:text-white transition font-medium"
         >
           Load More

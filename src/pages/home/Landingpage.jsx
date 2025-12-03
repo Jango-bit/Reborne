@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, ShoppingCart, Heart } from "lucide-react";
 import ReborneHome from "/assets/Images/Home1.png.jpg";
 import ReborneHome1 from "/assets/Images/Home2.png.jpg";
 import CenterPage from "./CenterPage";
-import Products from "../../data/Products";
+import Products from "../../components/Products";
 import AboutPage from "../AboutPage";
 
 export default function LandingPage() {
