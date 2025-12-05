@@ -10,6 +10,8 @@ import {
   Users,
   ShoppingBag,
   CreditCard,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 export const AdminLayout = () => {
   let token = localStorage.getItem("token");
@@ -31,6 +33,15 @@ export const AdminLayout = () => {
     { id: 3, name: "Users", icon: <Users size={20} />, link: "#" },
     { id: 4, name: "Orders", icon: <ShoppingBag size={20} />, link: "#" },
     { id: 5, name: "Payments", icon: <CreditCard size={20} />, link: "#" },
+    {
+      id: 6,
+      name: "Logout",
+      icon: <LogOut size={20} />,
+      onclick: () => {
+        localStorage.clear();
+        window.location.href = "/auth/ogin"; // optional redirect
+      },
+    },
   ];
   return token ? (
     <div className="flex flex-col min-h-screen bg-neutral-50">
@@ -62,6 +73,7 @@ export const AdminLayout = () => {
             {menuItems.map((item) => (
               <Link
                 to={item?.link}
+                onClick={() => item?.onclick?.()}
                 key={item.id}
                 className="flex items-center gap-4 px-6 py-3 cursor-pointer text-gray-700 hover:bg-gray-100 transition rounded-md"
               >

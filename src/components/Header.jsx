@@ -20,6 +20,7 @@ export default function Header({ navLinks = [] }) {
     queryFn: () => newRequest.get(USER_PROFILE).then((res) => res?.data),
     staleTime: 0,
     cacheTime: 0,
+    retry: false,
   });
   // 🔹 Detect scroll
   useEffect(() => {
@@ -56,11 +57,11 @@ export default function Header({ navLinks = [] }) {
   const filteredProducts = allProducts.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-useEffect(() => {
-  if (data?.isAdmin && !location.pathname.includes("/admin")) {
-    navigate("/admin");
-  }
-}, [data?.isAdmin, location.pathname, navigate]);
+  useEffect(() => {
+    if (data?.isAdmin && !location.pathname.includes("/admin")) {
+      navigate("/admin");
+    }
+  }, [data?.isAdmin, location.pathname, navigate]);
   return (
     <motion.header
       initial={{ y: -80, opacity: 0 }}
