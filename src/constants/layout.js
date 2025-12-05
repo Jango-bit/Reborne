@@ -3,19 +3,19 @@ export const adminNavLinks = [
     id: 1,
     name: "Home",
     value: "home",
-    link: "",
+    path: "",
   },
   {
     id: 1,
     name: "Products",
     value: "Products",
-    link: "/products",
+    path: "/admin/product",
   },
   {
     id: 1,
     name: "About",
     value: "about",
-    link: "",
+    path: "",
   },
 ];
 export const publicNavLinks = [

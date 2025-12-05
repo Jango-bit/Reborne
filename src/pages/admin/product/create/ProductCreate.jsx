@@ -1,8 +1,14 @@
+import { CATEGORY, newFormRequest, newRequest, PRODUCTS } from "@/api/api";
+import DeleteConfirmation from "@/components/DeleteConfirmation";
+import { CreatePaginateSelect } from "@/components/drop-down/CreatePaginateSelect";
+import CreateCategory from "@/components/popup/category/CreateCategory";
 import { useImageUploader } from "@/hook/useImageUploader";
-import { Camera, X } from "lucide-react";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useMutate } from "@/hook/useMutate";
+import { useQuery } from "@tanstack/react-query";
+import { Camera, Plus, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 // schema
 // const schema = Yup.object({
 //   name: Yup.string().required("Business name  is required"),
@@ -12,10 +18,31 @@ import { useNavigate } from "react-router-dom";
 //   gstNo: Yup.string(),
 // });
 export const ProductCreate = () => {
-  const [loader, setLoader] = useState(false);
-  const { images, imageFiles, handleImage, removeImage, removeAllImages } =
-    useImageUploader([], true);
-
+  const { id } = useParams();
+  const [openCategoryPopup, setOpenCategoryPopup] = useState(false);
+  const { mutate, isLoading, isSuccess } = useMutate(
+    newFormRequest,
+    `${PRODUCTS}/`,
+    "catergoryListing",
+    id ? "put" : "post",
+    "/admin/product"
+  );
+  const {
+    images,
+    imageFiles,
+    handleImage,
+    removeImage,
+    removeAllImages,
+    setImages,
+  } = useImageUploader([], true);
+  const { error, data } = useQuery({
+    queryKey: ["productDetail", id],
+    queryFn: () =>
+      newRequest.get(`${PRODUCTS}/${id}`, {}).then((res) => res?.data),
+    staleTime: 0,
+    cacheTime: 0,
+    enabled: !!id,
+  });
   const {
     register,
     handleSubmit,
@@ -29,17 +56,58 @@ export const ProductCreate = () => {
   });
 
   const onSubmit = (data) => {
-    setLoader(true);
-    handleSupplier(data);
+    const formData = new FormData();
+    // Append valid values from the data object
+    Object.keys(data).forEach((key) => {
+      const value = data[key];
+      if (Array.isArray(value)) {
+        value.forEach((item) => item?.id && formData.append(key, item.id));
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, typeof value === "object" ? value.value : value);
+      }
+    });
+    for (let file of imageFiles) {
+      formData.append("images", file);
+    }
+    id ? mutate({ formData, id }) : mutate({ formData });
   };
-
+  useEffect(() => {
+    if (data) {
+      setValue("name", data?.name);
+      setValue("slug", data?.slug);
+      setValue("description", data?.description);
+      setValue("brand", data?.brand);
+      setValue("price", data?.price);
+      setValue("countInStock", data?.countInStock);
+      setValue("rating", data?.rating);
+      setValue("numReviews", data?.numReviews);
+      setValue("colors", data?.colors);
+      setValue("sizes", data?.sizes);
+      if (data?.category) {
+        setValue("category", {
+          id: data?.category?._id,
+          value: data?.category?._id,
+          label: data?.category?.name,
+        });
+      }
+      if (data?.images?.length > 0) {
+        const list = data?.images?.map((src) => src?.url);
+        setImages(list);
+      }
+    }
+  }, [data]);
   return (
     <>
-      <div className="flex flex-col overflow-y-scroll min-h-fit pb-14 overflow-y-min">
-        <div className="text-zinc-800 flex items-center justify-between gap-3 border-b py-5 px-7 border-b-gray-200 text-base font-semibold">
+      <CreateCategory
+        popupOpen={openCategoryPopup}
+        setPopupOpen={setOpenCategoryPopup}
+      />
+   
+      <div className="flex flex-col  min-h-fit pb-5">
+        <div className="text-zinc-800 flex items-center justify-between gap-3 border-b py-5 border-b-gray-200 text-base font-semibold">
           Create Product
         </div>
-        <div className="flex flex-col gap-3 px-5 min-h-[800px]">
+        <div className="flex flex-col gap-3 min-h-[800px]">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="grid w-full grid-cols-3 gap-y-4 mt-7 "
@@ -111,20 +179,49 @@ export const ProductCreate = () => {
               )}
             </div>
             <div className="flex px-3 group flex-col space-y-2">
-              <label className="text-[#3A3A3A] text-[0.8rem] group-focus-within:text-[#2E2E2E] font-medium">
-                Category
-              </label>
-              <input
-                {...register("category", { required: true })}
-                autoComplete="off"
-                type="text"
-                className="rounded border border-[#C7C7C7] w-full px-2 focus:border-[#2E2E2E] text-sm border-opacity-60 h-10 text-zinc-500"
+              <div className="flex gap-x-3 items-center">
+                <label className="text-[#3A3A3A] text-[0.8rem] group-focus-within:text-[#2E2E2E] font-medium">
+                  Category
+                </label>
+                <button
+                  onClick={() => setOpenCategoryPopup(true)}
+                  type="button"
+                  className="transition-transform duration-200 hover:scale-110 active:scale-95"
+                >
+                  <Plus className="size-5" />
+                </button>
+              </div>
+
+              <Controller
+                name="category"
+                control={control}
+                //   rules={{ required: true }}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <>
+                    <CreatePaginateSelect
+                      api={CATEGORY}
+                      request={newRequest}
+                      limit={15}
+                      queryKey={"catergoryListing"}
+                      searchKey={"name"}
+                      customValue="_id"
+                      value={value}
+                      onChange={(option) => {
+                        onChange(option);
+                      }}
+                      className="rounded border border-[#C7C7C7] w-full px-2 focus:border-[#2E2E2E] text-sm border-opacity-60 h-10 text-zinc-500"
+                    />
+                    {error && (
+                      <span className="text-xs font-medium text-red-500">
+                        {error?.message}
+                      </span>
+                    )}
+                  </>
+                )}
               />
-              {errors?.category && (
-                <span className="text-xs font-medium text-red-500">
-                  {errors?.category?.message}
-                </span>
-              )}
             </div>
             <div className="flex px-3 group flex-col space-y-2">
               <label className="text-[#3A3A3A] text-[0.8rem] group-focus-within:text-[#2E2E2E] font-medium">
@@ -272,8 +369,11 @@ export const ProductCreate = () => {
             </div>
 
             <div className=" w-full col-span-3  flex px-3">
-              <button className="bg-[#2E2E2E] font-medium rounded flex items-center justify-center text-[0.8rem] tracking-[0.1px] text-white h-10 w-fit px-7">
-                {loader ? (
+              <button
+                disabled={isLoading}
+                className="bg-[#2E2E2E] font-medium rounded flex items-center justify-center text-[0.8rem] tracking-[0.1px] text-white h-10 w-fit px-10"
+              >
+                {isLoading ? (
                   <div className="flex items-center gap-3">
                     <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
                     Saving

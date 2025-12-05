@@ -1,20 +1,42 @@
-// src/pages/ProductPage.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import allProducts from "../data/allProducts";
 import { motion } from "framer-motion";
 import { Star, ArrowLeft, ArrowUpDown } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { basicRequest, PRODUCTS } from "@/api/api";
 
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = allProducts.find((p) => p.id === Number(id));
-
+  const [sortOption, setSortOption] = useState("default");
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["productDetail", id],
+    queryFn: () =>
+      basicRequest.get(`${PRODUCTS}/${id}`, {}).then((res) => res?.data),
+    staleTime: 0,
+    cacheTime: 0,
+    enabled: !!id,
+  });
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
-  if (!product) {
+  const { data: similarProducts } = useQuery({
+    queryKey: ["similarProducts", id],
+    queryFn: () =>
+      basicRequest
+        .get(PRODUCTS, {
+          params: {
+            search: data?.category?.name,
+            limit: 10,
+          },
+        })
+        .then((res) => res?.data),
+    staleTime: 0,
+    cacheTime: 0,
+    enabled: !!data?._id,
+  });
+  if (!data) {
     return (
       <div className="text-center py-40 text-gray-700 text-xl">
         Product not found 😢
@@ -23,46 +45,13 @@ export default function ProductPage() {
   }
 
   const phoneNumber = "917356179857";
-  const message = `👋 Hello! I'm interested in this product:\n\n🛍️ *${product.name}*\n🏷️ Brand: ${product.brand}\n💰 Price: ${product.price}\n\nCan you share more details?`;
+  const message = `👋 Hello! I'm interested in this product:\n\n🛍️ *${data?.name}*\n🏷️ Brand: ${data?.brand}\n💰 Price: ${data?.price}\n\nCan you share more details?`;
   const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
     message
   )}`;
 
-  const baseSimilar = allProducts.filter(
-    (p) =>
-      p.id !== product.id &&
-      (p.brand === product.brand || p.category === product.category)
-  );
-
-  const [sortOption, setSortOption] = useState("default");
-
-  const similarProducts = useMemo(() => {
-    const parsePrice = (price) => {
-      if (!price) return 0;
-      return parseFloat(price.toString().replace(/[^\d.]/g, ""));
-    };
-
-    let sorted = [...baseSimilar];
-
-    switch (sortOption) {
-      case "price-asc":
-        sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-        break;
-      case "price-desc":
-        sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-        break;
-      case "name":
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      default:
-        break;
-    }
-
-    return sorted;
-  }, [sortOption, baseSimilar]);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-100 via-white to-neutral-50 flex flex-col items-center justify-start px-4 sm:px-6 md:px-12 pt-28 pb-16 space-y-14">
+    <div className="min-h-screen bg-linear-to-b from-neutral-100 via-white to-neutral-50 flex flex-col items-center justify-start px-4 sm:px-6 md:px-12 pt-28 pb-16 space-y-14">
       <motion.div
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -76,9 +65,9 @@ export default function ProductPage() {
           className="relative"
         >
           <motion.img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-[250px] sm:h-[320px] md:h-[400px] object-cover"
+            src={data?.images?.[0]?.url}
+            alt={data?.name}
+            className="w-full h-[250px] sm:h-80 md:h-[400px] object-cover"
             whileHover={{
               scale: 1.04,
               transition: { duration: 0.4 },
@@ -93,20 +82,20 @@ export default function ProductPage() {
           className="p-5 sm:p-7 md:p-8 space-y-4"
         >
           <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 leading-snug">
-            {product.name}
+            {data?.name}
           </h1>
 
           <div className="flex items-center gap-2 text-neutral-600 text-sm sm:text-base">
             <Star className="text-yellow-500 fill-yellow-400" size={16} />
-            <span>{product.brand}</span>
+            <span>{data?.brand}</span>
           </div>
 
           <p className="text-neutral-700 text-sm sm:text-base leading-relaxed line-clamp-4">
-            {product.description}
+            {data?.description}
           </p>
 
           <p className="text-xl sm:text-2xl font-semibold text-green-700">
-            {product.price}
+            {data?.price}
           </p>
 
           {/* Buttons */}
@@ -119,7 +108,12 @@ export default function ProductPage() {
               whileTap={{ scale: 0.95 }}
               className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-full font-medium hover:bg-green-700 transition-all text-sm sm:text-base"
             >
-              💬 WhatsApp
+              <img
+                src="/assets/icon/whatsapp.svg"
+                alt="whatsapp"
+                className="size-8"
+              />{" "}
+              WhatsApp
             </motion.a>
           </div>
 
@@ -136,7 +130,8 @@ export default function ProductPage() {
       </motion.div>
 
       {/* 🛍️ Similar Products */}
-      {similarProducts.length > 0 && (
+
+      {similarProducts?.products?.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -166,24 +161,24 @@ export default function ProductPage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
-            {similarProducts.map((item) => (
+            {similarProducts?.products?.map((item) => (
               <motion.div
-                key={item.id}
+                key={item?._id}
                 whileHover={{ scale: 1.03 }}
                 className="bg-white border border-neutral-200 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-all"
-                onClick={() => navigate(`/products/${item.id}`)}
+                onClick={() => navigate(`/products/${item._id}`)}
               >
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={item?.images?.[0]?.url}
+                  alt={item?.images?.[0]?.alt}
                   className="w-full h-40 sm:h-48 object-cover rounded-t-xl"
                 />
                 <div className="p-3 sm:p-4">
                   <h3 className="text-sm sm:text-base font-semibold text-neutral-800 truncate">
-                    {item.name}
+                    {item?.name}
                   </h3>
                   <p className="text-green-700 text-sm font-medium mt-1">
-                    {item.price}
+                    {item?.price}
                   </p>
                 </div>
               </motion.div>

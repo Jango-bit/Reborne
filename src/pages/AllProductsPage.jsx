@@ -137,14 +137,14 @@ export default function AllProductsPage() {
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-12">
         {filteredProducts?.map((product, index) => (
           <motion.div
-            key={product?.slug}
+            key={product?._id}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: index * 0.05 }}
           >
             {/* Wrap whole card with Link */}
             <Link
-              to={`/products/${product?.id}`}
+              to={`/products/${product?._id}`}
               className="group relative bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 block"
             >
               {/* ❤️ Wishlist Icon */}
@@ -156,7 +156,7 @@ export default function AllProductsPage() {
               <div className="overflow-hidden rounded-t-3xl relative">
                 <motion.img
                   src={product?.images?.[0]?.url}
-                  alt={product?.name}
+                  alt={product?.images?.[0]?.alt}
                   className="w-full h-[400px] object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-3xl"></div>
@@ -168,7 +168,7 @@ export default function AllProductsPage() {
                   {product?.name}
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
-                  {product?.category}
+                  {product?.category?.name}
                 </p>
                 <p className="mt-3 text-lg font-semibold text-gray-800">
                   {product?.price}

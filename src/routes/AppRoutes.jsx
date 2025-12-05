@@ -2,8 +2,9 @@ import ScrollBack from "@/components/ScrollTo";
 import { AdminLayout } from "@/layouts/Admin.Layout";
 import Layout from "@/layouts/Layout";
 import AboutPage from "@/pages/AboutPage";
+import { CategoryList } from "@/pages/admin/category/CategoryList";
 import { Dashboard } from "@/pages/admin/Dashboard";
-import { ProductCreate } from "@/pages/admin/product/ProductCreate";
+import { ProductCreate } from "@/pages/admin/product/create/ProductCreate";
 import { ProjectList } from "@/pages/admin/product/ProjectList";
 import AllProductsPage from "@/pages/AllProductsPage";
 import { Login } from "@/pages/auth/Login";
@@ -26,14 +27,14 @@ export const AppRoutes = () => {
           <Route path="products/:id" element={<ProductPage />} />
           <Route path="about" element={<AboutPage />} />
         </Route>
-         <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="product" element={<ProjectList />} />
-        <Route path="product/create" element={<ProductCreate />} />
-      </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="product" element={<ProjectList />} />
+          <Route path="product/create" element={<ProductCreate />} />
+          <Route path="product/edit/:id" element={<ProductCreate />} />
+          <Route path="category" element={<CategoryList />} />
+        </Route>
       </Routes>
-     
-
     </Router>
   );
 };

@@ -24,7 +24,7 @@ export default function Products() {
     staleTime: 0,
     cacheTime: 0,
   });
-  console.log(data);
+
   return (
     <div className="relative bg-linear-to-b from-neutral-50 via-white to-neutral-100 min-h-screen py-24 px-4 md:px-16 overflow-hidden">
       {/* Animated Background Blur */}
@@ -67,39 +67,44 @@ export default function Products() {
           View All Products
         </button>
       </div>
-      {console.log(data)}
       {/* Products Grid (optional preview) */}
       <div className="max-w-[1600px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
-        {data?.products?.map((product, index) => (
-          <motion.div
-            key={product?.slug || index}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.6,
-              delay: index * 0.07,
-              ease: "easeOut",
-            }}
-            whileHover={{ scale: 1.04 }}
-            className="cursor-pointer group text-center"
-          >
-            <div className="overflow-hidden rounded-3xl bg-white shadow-sm hover:shadow-xl transition-all duration-500">
-              <motion.img
-                src={product?.images?.[0]?.url}
-                alt={product?.name}
-                className="w-full h-[340px] object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
-              />
-            </div>
+        {data?.products?.length > 0 &&
+          data?.products?.map((product, index) => (
+            <motion.div
+              key={index}
+              onClick={() => navigate(`/products/${product?._id}`)}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.07,
+                ease: "easeOut",
+              }}
+              whileHover={{ scale: 1.04 }}
+              className="cursor-pointer group text-center"
+            >
+              <div className="overflow-hidden rounded-3xl bg-white shadow-sm hover:shadow-xl transition-all duration-500">
+                <motion.img
+                  src={product?.images?.[0]?.url}
+                  alt={product?.images?.[0]?.alt}
+                  className="w-full h-[340px] object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                />
+              </div>
 
-            <div className="mt-4">
-              <h2 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">
-                {product?.name}
-              </h2>
-              <p className="text-gray-500 text-sm mt-1">{product?.category}</p>
-              <p className="mt-2 text-gray-800 font-medium">{product?.price}</p>
-            </div>
-          </motion.div>
-        ))}
+              <div className="mt-4">
+                <h2 className="text-base md:text-lg font-semibold text-gray-900 tracking-tight">
+                  {product?.name}
+                </h2>
+                <p className="text-gray-500 text-sm mt-1">
+                  {product?.category?.name ?? ""}
+                </p>
+                <p className="mt-2 text-gray-800 font-medium">
+                  {product?.price}
+                </p>
+              </div>
+            </motion.div>
+          ))}
       </div>
     </div>
   );

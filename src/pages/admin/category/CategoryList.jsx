@@ -1,6 +1,7 @@
-import { newRequest, PRODUCTS } from "@/api/api";
+import { CATEGORY, newRequest, PRODUCTS } from "@/api/api";
 import DeleteConfirmation from "@/components/DeleteConfirmation";
 import NoData from "@/components/NoData";
+import CreateCategory from "@/components/popup/category/CreateCategory";
 import Pagination from "@/components/table/Pagination";
 import QueryTable from "@/components/table/QueryTable";
 import { useQuery } from "@tanstack/react-query";
@@ -8,17 +9,19 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export const ProjectList = () => {
+export const CategoryList = () => {
+  const [openCategoryPopup, setOpenCategoryPopup] = useState(false);
+  const [openDeletePopup, setOpenDeletePopup] = useState(false);
+
+  const [slug, setSlug] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const pageLimit = 10;
-  const [openDeletePopup, setOpenDeletePopup] = useState(false);
-  const [slug, setSlug] = useState("");
   const { isLoading, error, data } = useQuery({
-    queryKey: ["productListing", currentPage, pageLimit],
+    queryKey: ["categoryListing", currentPage, pageLimit],
     queryFn: () =>
       newRequest
-        .get(PRODUCTS, {
+        .get(CATEGORY, {
           params: {
             limit: pageLimit,
             page: currentPage,
@@ -31,8 +34,7 @@ export const ProjectList = () => {
   useEffect(() => {
     setTotalPages(data?.pages);
   }, [data?.pages]);
-  console.log(data);
-  const list = React.useMemo(() => data?.products, [data]);
+  const list = React.useMemo(() => data?.data, [data]);
   const columns = React.useMemo(
     () => [
       {
@@ -50,28 +52,8 @@ export const ProjectList = () => {
         accessorKey: "description",
       },
       {
-        header: "Brand",
-        accessorKey: "brand",
-      },
-      {
-        header: "Category",
-        accessorKey: "category.name",
-      },
-      {
-        header: "Price",
-        accessorKey: "price",
-      },
-      {
-        header: "Stock In",
-        accessorKey: "countInStock",
-      },
-      {
-        header: "Rating",
-        accessorKey: "rating",
-      },
-      {
-        header: "Reviews",
-        accessorKey: "numReviews",
+        header: "Slug",
+        accessorKey: "slug",
       },
 
       {
@@ -80,12 +62,15 @@ export const ProjectList = () => {
         cell: ({ row }) => {
           return (
             <div className="flex gap-2">
-              <Link
-                to={`/admin/product/edit/${row?.original?._id}`}
+              <div
+                onClick={() => {
+                  setSlug(row?.original);
+                  setOpenCategoryPopup(true);
+                }}
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded bg-[#F5F5F5] px-2 text-[#2C2C2C] transition-all duration-500 hover:scale-[1.05] hover:shadow"
               >
                 <Pencil className="text-[#2C2C2C]" />
-              </Link>
+              </div>
               <div
                 onClick={() => {
                   setSlug(row?.original?._id);
@@ -102,27 +87,36 @@ export const ProjectList = () => {
     ],
     [currentPage]
   );
+  console.log(data)
   return (
     <>
+      {" "}
+      <CreateCategory
+        popupOpen={openCategoryPopup}
+        setPopupOpen={setOpenCategoryPopup}
+        setSlug={setSlug}
+        slug={slug}
+      />
       <DeleteConfirmation
         popupOpen={openDeletePopup}
         setPopupOpen={setOpenDeletePopup}
-        api={`${PRODUCTS}/${slug}`}
-        querykey={"productListing"}
+        api={`${CATEGORY}/${slug}`}
+        querykey={"categoryListing"}
       />
-
       <div className="flex  flex-col gap-4 pb-5">
         <div className="text-zinc-800   flex items-center justify-between gap-3 border-b py-4  border-b-gray-200 text-base font-semibold">
           <div className="flex gap-4 text-zinc-400">
-            <h3 className="text-zinc-800">Products</h3>
+            <h3 className="text-zinc-800">Category</h3>
           </div>
-          <Link
-            to={`create`}
+          <div
+            onClick={() => {
+              setOpenCategoryPopup(true);
+            }}
             className="flex cursor-pointer bg-[#2E2E2E] text-sm gap-2 font-normal h-10 w-28 justify-center items-center text-white rounded-[5px]"
           >
             <Plus className="size-4" />
             Create
-          </Link>
+          </div>
         </div>
         {isLoading ? (
           <div className="flex mt-28 items-center justify-center w-full h-full">

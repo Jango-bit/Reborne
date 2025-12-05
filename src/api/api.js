@@ -42,18 +42,20 @@ export const newFormRequest = axios.create({
 // Request interceptors
 const attachToken = (config) => {
   const token = localStorage.getItem("token");
+  console.log(token)
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
 };
-// newRequest.interceptors.request.use(attachToken);
+newRequest.interceptors.request.use(attachToken);
 newFormRequest.interceptors.request.use(attachToken);
 XFormRequest.interceptors.request.use(attachToken);
 
 // Response interceptors
 const handleUnauthorized = (error) => {
-  if (error.response && error.response.status === 401) {
+  console.log(error?.status)
+  if (error && error?.status === 401) {
     // Remove token from localStorage
     localStorage.removeItem("token");
     // Optionally, you can also redirect the user to a login page or show a notification
@@ -77,6 +79,8 @@ XFormRequest.interceptors.response.use(
 );
 
 export const LOGIN = "users/login";
+export const USER_PROFILE = "users";
 export const PRODUCTS = "products";
+export const CATEGORY = "categories";
 export const ORDERS = "orders";
 // export const LOGIN = "users/login";

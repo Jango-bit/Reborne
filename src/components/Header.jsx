@@ -5,6 +5,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import LogoReborne from "/assets/Images/ReborneLogo.png";
 import allProducts from "../data/allProducts";
 import { publicNavLinks } from "@/constants/layout";
+import { useQuery } from "@tanstack/react-query";
+import { newRequest, USER_PROFILE } from "@/api/api";
 
 export default function Header({ navLinks = [] }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -13,7 +15,12 @@ export default function Header({ navLinks = [] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: () => newRequest.get(USER_PROFILE).then((res) => res?.data),
+    staleTime: 0,
+    cacheTime: 0,
+  });
   // 🔹 Detect scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -49,7 +56,11 @@ export default function Header({ navLinks = [] }) {
   const filteredProducts = allProducts.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+useEffect(() => {
+  if (data?.isAdmin && !location.pathname.includes("/admin")) {
+    navigate("/admin");
+  }
+}, [data?.isAdmin, location.pathname, navigate]);
   return (
     <motion.header
       initial={{ y: -80, opacity: 0 }}

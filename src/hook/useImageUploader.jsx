@@ -79,5 +79,6 @@ export const useImageUploader = (initialImages = [], multiple = false) => {
     handleImage,
     removeImage,
     removeAllImages,
+    setImages,
   };
 };
