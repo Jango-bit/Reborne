@@ -27,7 +27,7 @@ export default function ProductPage() {
       basicRequest
         .get(PRODUCTS, {
           params: {
-            search: data?.name,
+            search: data?.category?.name,
             limit: 10,
           },
         })
@@ -108,7 +108,12 @@ export default function ProductPage() {
               whileTap={{ scale: 0.95 }}
               className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-full font-medium hover:bg-green-700 transition-all text-sm sm:text-base"
             >
-            <img src="/assets/icon/whatsapp.svg" alt="whatsapp" className="size-8" /> WhatsApp
+              <img
+                src="/assets/icon/whatsapp.svg"
+                alt="whatsapp"
+                className="size-8"
+              />{" "}
+              WhatsApp
             </motion.a>
           </div>
 

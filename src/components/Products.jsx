@@ -24,7 +24,7 @@ export default function Products() {
     staleTime: 0,
     cacheTime: 0,
   });
-  console.log(data);
+
   return (
     <div className="relative bg-linear-to-b from-neutral-50 via-white to-neutral-100 min-h-screen py-24 px-4 md:px-16 overflow-hidden">
       {/* Animated Background Blur */}
@@ -73,6 +73,7 @@ export default function Products() {
           data?.products?.map((product, index) => (
             <motion.div
               key={index}
+              onClick={() => navigate(`/products/${product?._id}`)}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{

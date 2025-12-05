@@ -1,4 +1,5 @@
 import { CATEGORY, newRequest, PRODUCTS } from "@/api/api";
+import DeleteConfirmation from "@/components/DeleteConfirmation";
 import NoData from "@/components/NoData";
 import CreateCategory from "@/components/popup/category/CreateCategory";
 import Pagination from "@/components/table/Pagination";
@@ -10,6 +11,8 @@ import { Link } from "react-router-dom";
 
 export const CategoryList = () => {
   const [openCategoryPopup, setOpenCategoryPopup] = useState(false);
+  const [openDeletePopup, setOpenDeletePopup] = useState(false);
+
   const [slug, setSlug] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
@@ -70,8 +73,8 @@ export const CategoryList = () => {
               </div>
               <div
                 onClick={() => {
-                  setSlug(row?.original?.id);
-                  setPopupOpen(true);
+                  setSlug(row?.original?._id);
+                  setOpenDeletePopup(true);
                 }}
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded bg-[#F5F5F5] px-2 transition-all duration-500 hover:scale-[1.05] hover:shadow"
               >
@@ -84,6 +87,7 @@ export const CategoryList = () => {
     ],
     [currentPage]
   );
+  console.log(data)
   return (
     <>
       {" "}
@@ -93,8 +97,14 @@ export const CategoryList = () => {
         setSlug={setSlug}
         slug={slug}
       />
-      <div className="flex overflow-y-scroll pb-10 overflow-y-min flex-col gap-2 px-20">
-        <div className="text-zinc-800   flex items-center justify-between gap-3 border-b py-4  px-7 border-b-gray-200 text-base font-semibold">
+      <DeleteConfirmation
+        popupOpen={openDeletePopup}
+        setPopupOpen={setOpenDeletePopup}
+        api={`${CATEGORY}/${slug}`}
+        querykey={"categoryListing"}
+      />
+      <div className="flex  flex-col gap-4 pb-5">
+        <div className="text-zinc-800   flex items-center justify-between gap-3 border-b py-4  border-b-gray-200 text-base font-semibold">
           <div className="flex gap-4 text-zinc-400">
             <h3 className="text-zinc-800">Category</h3>
           </div>
@@ -124,11 +134,13 @@ export const CategoryList = () => {
             ) : (
               <>
                 <QueryTable list={list} columns={columns} />
-                <Pagination
-                  currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                  totalPages={totalPages}
-                />
+                <div className="ml-auto">
+                  <Pagination
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    totalPages={totalPages}
+                  />
+                </div>
               </>
             )}
           </>

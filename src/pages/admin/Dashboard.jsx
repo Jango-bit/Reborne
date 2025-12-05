@@ -1,22 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { LogIn, User, Lock, LayoutDashboard, Search, TrendingUp, AlertTriangle, Package, GitBranch } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  LogIn,
+  User,
+  Lock,
+  LayoutDashboard,
+  Search,
+  TrendingUp,
+  AlertTriangle,
+  Package,
+  GitBranch,
+} from "lucide-react";
 
 export const Dashboard = () => {
-    const [activeLink, setActiveLink] = useState('dashboard');
+  const [activeLink, setActiveLink] = useState("dashboard");
 
-    const SidebarLink = ({ name, icon: Icon, linkKey }) => (
-        <button
-            onClick={() => setActiveLink(linkKey)}
-            className={`flex items-center w-full px-4 py-3 rounded-xl transition duration-200 text-left
-                ${activeLink === linkKey
-                    ? 'bg-red-600 text-white shadow-md hover:bg-red-700'
-                    : 'text-gray-700 hover:bg-gray-100'
+  const SidebarLink = ({ name, icon: Icon, linkKey }) => (
+    <button
+      onClick={() => setActiveLink(linkKey)}
+      className={`flex items-center w-full px-4 py-3 rounded-xl transition duration-200 text-left
+                ${
+                  activeLink === linkKey
+                    ? "bg-red-600 text-white shadow-md hover:bg-red-700"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`}
-        >
-            <Icon size={20} className="mr-3" />
-            <span className="font-medium">{name}</span>
-        </button>
-    );
+    >
+      <Icon size={20} className="mr-3" />
+      <span className="font-medium">{name}</span>
+    </button>
+  );
+
+  return (
+    <>
+      <h2 className="text-3xl font-bold text-gray-900">
+        Admin <span className="text-green-600">Dashboard</span>
+      </h2>
+      <p className="text-gray-600 mt-1">
+        Welcome back! Here's your store overview.
+      </p>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="bg-white p-6 rounded-2xl shadow-md border">
+          <h3 className="text-gray-700 font-medium">Total Products</h3>
+          <p className="text-3xl font-bold mt-2">128</p>
+          <p className="text-green-600 text-sm mt-1">+12 this month</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-md border">
+          <h3 className="text-gray-700 font-medium">Orders</h3>
+          <p className="text-3xl font-bold mt-2">542</p>
+          <p className="text-green-600 text-sm mt-1">+34 this week</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-md border">
+          <h3 className="text-gray-700 font-medium">Revenue</h3>
+          <p className="text-3xl font-bold mt-2">₹98,430</p>
+          <p className="text-green-600 text-sm mt-1">+8.4% growth</p>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white p-8 rounded-2xl shadow-md border mt-10">
+        <h3 className="text-xl font-semibold text-gray-900">
+          Recent <span className="text-green-600">Activity</span>
+        </h3>
+
+        <div className="mt-5 space-y-3 text-gray-700">
+          <p>• New product “Street Hoodie” added.</p>
+          <p>• 3 new user signups today.</p>
+          <p>• Order #3241 has been shipped.</p>
+        </div>
+      </div>
+    </>
+  );
   return (
     <div className="min-h-[calc(100vh-64px)] bg-gray-50 lg:bg-red-50 p-0">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row">
@@ -193,40 +249,72 @@ export const Dashboard = () => {
     </div>
   );
 };
-const DashboardCard = ({ title, icon, color, description, value, unit, children }) => (
-    <div className={`p-5 rounded-xl shadow-lg border-l-4 ${color === 'red' ? 'border-red-600' : 'border-gray-800'} bg-white hover:shadow-xl transition duration-300`}>
-        <div className="flex items-center justify-between">
-            <p className={`text-sm font-medium ${color === 'red' ? 'text-red-600' : 'text-gray-800'}`}>{title}</p>
-            {icon}
-        </div>
-        <div className="mt-1 flex items-end justify-between">
-            {value && (
-                <div className="text-3xl font-bold text-gray-900 leading-none">
-                    {value}
-                    {unit && <span className="text-base font-semibold text-gray-500 ml-1">{unit}</span>}
-                </div>
-            )}
-            {children}
-        </div>
-        <p className="mt-3 text-xs text-gray-500">{description}</p>
+const DashboardCard = ({
+  title,
+  icon,
+  color,
+  description,
+  value,
+  unit,
+  children,
+}) => (
+  <div
+    className={`p-5 rounded-xl shadow-lg border-l-4 ${
+      color === "red" ? "border-red-600" : "border-gray-800"
+    } bg-white hover:shadow-xl transition duration-300`}
+  >
+    <div className="flex items-center justify-between">
+      <p
+        className={`text-sm font-medium ${
+          color === "red" ? "text-red-600" : "text-gray-800"
+        }`}
+      >
+        {title}
+      </p>
+      {icon}
     </div>
+    <div className="mt-1 flex items-end justify-between">
+      {value && (
+        <div className="text-3xl font-bold text-gray-900 leading-none">
+          {value}
+          {unit && (
+            <span className="text-base font-semibold text-gray-500 ml-1">
+              {unit}
+            </span>
+          )}
+        </div>
+      )}
+      {children}
+    </div>
+    <p className="mt-3 text-xs text-gray-500">{description}</p>
+  </div>
 );
 const StaticSalesChart = () => (
-    <div className="h-64 p-4 bg-white rounded-lg shadow-inner flex flex-col justify-end border">
-        <div className="text-gray-400 text-xs mb-2">Sales in last 6 months (Thousands USD)</div>
-        <div className="flex items-end h-48 space-x-2 border-l border-b border-gray-300 pr-2 pb-1">
-            {/* Data: [Jan: 40, Feb: 65, Mar: 80, Apr: 50, May: 95, Jun: 70] scaled to height */}
-            {[40, 65, 80, 50, 95, 70].map((height, index) => (
-                <div 
-                    key={index} 
-                    className="flex-1 rounded-t-md hover:bg-red-500 transition duration-300 cursor-pointer" 
-                    style={{ height: `${height}%`, backgroundColor: '#f87171' }} /* Tailwind red-400 */
-                    title={`Month ${index + 1}: $${height}k`}
-                ></div>
-            ))}
-        </div>
-        <div className="flex justify-between text-xs text-gray-500 mt-1 pl-4">
-            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-        </div>
+  <div className="h-64 p-4 bg-white rounded-lg shadow-inner flex flex-col justify-end border">
+    <div className="text-gray-400 text-xs mb-2">
+      Sales in last 6 months (Thousands USD)
     </div>
+    <div className="flex items-end h-48 space-x-2 border-l border-b border-gray-300 pr-2 pb-1">
+      {/* Data: [Jan: 40, Feb: 65, Mar: 80, Apr: 50, May: 95, Jun: 70] scaled to height */}
+      {[40, 65, 80, 50, 95, 70].map((height, index) => (
+        <div
+          key={index}
+          className="flex-1 rounded-t-md hover:bg-red-500 transition duration-300 cursor-pointer"
+          style={{
+            height: `${height}%`,
+            backgroundColor: "#f87171",
+          }} /* Tailwind red-400 */
+          title={`Month ${index + 1}: $${height}k`}
+        ></div>
+      ))}
+    </div>
+    <div className="flex justify-between text-xs text-gray-500 mt-1 pl-4">
+      <span>Jan</span>
+      <span>Feb</span>
+      <span>Mar</span>
+      <span>Apr</span>
+      <span>May</span>
+      <span>Jun</span>
+    </div>
+  </div>
 );
