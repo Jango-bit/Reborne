@@ -79,6 +79,7 @@ XFormRequest.interceptors.response.use(
 );
 
 export const LOGIN = "users/login";
+export const USER_PROFILE = "users";
 export const PRODUCTS = "products";
 export const CATEGORY = "categories";
 export const ORDERS = "orders";

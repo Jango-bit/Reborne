@@ -1,4 +1,5 @@
 import { CATEGORY, newFormRequest, newRequest, PRODUCTS } from "@/api/api";
+import DeleteConfirmation from "@/components/DeleteConfirmation";
 import { CreatePaginateSelect } from "@/components/drop-down/CreatePaginateSelect";
 import CreateCategory from "@/components/popup/category/CreateCategory";
 import { useImageUploader } from "@/hook/useImageUploader";
@@ -101,12 +102,12 @@ export const ProductCreate = () => {
         popupOpen={openCategoryPopup}
         setPopupOpen={setOpenCategoryPopup}
       />
-
-      <div className="flex flex-col overflow-y-scroll min-h-fit pb-14 overflow-y-min">
-        <div className="text-zinc-800 flex items-center justify-between gap-3 border-b py-5 px-7 border-b-gray-200 text-base font-semibold">
+   
+      <div className="flex flex-col  min-h-fit pb-5">
+        <div className="text-zinc-800 flex items-center justify-between gap-3 border-b py-5 border-b-gray-200 text-base font-semibold">
           Create Product
         </div>
-        <div className="flex flex-col gap-3 px-5 min-h-[800px]">
+        <div className="flex flex-col gap-3 min-h-[800px]">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="grid w-full grid-cols-3 gap-y-4 mt-7 "
@@ -370,7 +371,7 @@ export const ProductCreate = () => {
             <div className=" w-full col-span-3  flex px-3">
               <button
                 disabled={isLoading}
-                className="bg-[#2E2E2E] font-medium rounded flex items-center justify-center text-[0.8rem] tracking-[0.1px] text-white h-10 w-fit px-7"
+                className="bg-[#2E2E2E] font-medium rounded flex items-center justify-center text-[0.8rem] tracking-[0.1px] text-white h-10 w-fit px-10"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-3">

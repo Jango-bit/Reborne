@@ -1,4 +1,5 @@
 import { newRequest, PRODUCTS } from "@/api/api";
+import DeleteConfirmation from "@/components/DeleteConfirmation";
 import NoData from "@/components/NoData";
 import Pagination from "@/components/table/Pagination";
 import QueryTable from "@/components/table/QueryTable";
@@ -11,6 +12,8 @@ export const ProjectList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const pageLimit = 10;
+  const [openDeletePopup, setOpenDeletePopup] = useState(false);
+  const [slug, setSlug] = useState("");
   const { isLoading, error, data } = useQuery({
     queryKey: ["productListing", currentPage, pageLimit],
     queryFn: () =>
@@ -85,8 +88,8 @@ export const ProjectList = () => {
               </Link>
               <div
                 onClick={() => {
-                  setSlug(row?.original?.id);
-                  setPopupOpen(true);
+                  setSlug(row?.original?._id);
+                  setOpenDeletePopup(true);
                 }}
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded bg-[#F5F5F5] px-2 transition-all duration-500 hover:scale-[1.05] hover:shadow"
               >
@@ -100,44 +103,55 @@ export const ProjectList = () => {
     [currentPage]
   );
   return (
-    <div className="flex overflow-y-scroll pb-10 overflow-y-min flex-col gap-2 px-20">
-      <div className="text-zinc-800   flex items-center justify-between gap-3 border-b py-4  px-7 border-b-gray-200 text-base font-semibold">
-        <div className="flex gap-4 text-zinc-400">
-          <h3 className="text-zinc-800">Products</h3>
-        </div>
-        <Link
-          to={`create`}
-          className="flex cursor-pointer bg-[#2E2E2E] text-sm gap-2 font-normal h-10 w-28 justify-center items-center text-white rounded-[5px]"
-        >
-          <Plus className="size-4" />
-          Create
-        </Link>
-      </div>
-      {isLoading ? (
-        <div className="flex mt-28 items-center justify-center w-full h-full">
-          <div className="relative h-10 w-10">
-            <img
-              src="/loader/load.gif"
-              className="object-contain h-full w-full"
-            />
+    <>
+      <DeleteConfirmation
+        popupOpen={openDeletePopup}
+        setPopupOpen={setOpenDeletePopup}
+        api={`${PRODUCTS}/${slug}`}
+        querykey={"productListing"}
+      />
+
+      <div className="flex  flex-col gap-4 pb-5">
+        <div className="text-zinc-800   flex items-center justify-between gap-3 border-b py-4  border-b-gray-200 text-base font-semibold">
+          <div className="flex gap-4 text-zinc-400">
+            <h3 className="text-zinc-800">Products</h3>
           </div>
+          <Link
+            to={`create`}
+            className="flex cursor-pointer bg-[#2E2E2E] text-sm gap-2 font-normal h-10 w-28 justify-center items-center text-white rounded-[5px]"
+          >
+            <Plus className="size-4" />
+            Create
+          </Link>
         </div>
-      ) : (
-        <>
-          {!list?.length ? (
-            <NoData />
-          ) : (
-            <>
-              <QueryTable list={list} columns={columns} />
-              <Pagination
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                totalPages={totalPages}
+        {isLoading ? (
+          <div className="flex mt-28 items-center justify-center w-full h-full">
+            <div className="relative h-10 w-10">
+              <img
+                src="/loader/load.gif"
+                className="object-contain h-full w-full"
               />
-            </>
-          )}
-        </>
-      )}
-    </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {!list?.length ? (
+              <NoData />
+            ) : (
+              <>
+                <QueryTable list={list} columns={columns} />
+                <div className="ml-auto">
+                  <Pagination
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    totalPages={totalPages}
+                  />
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 };
