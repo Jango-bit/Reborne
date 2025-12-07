@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-// Assuming 'toast' and 'isFileAllowed' are available/imported
 import toast from "react-hot-toast";
 import { isFileAllowed } from "@/utils/image";
 
 export const useImageUploader = (initialImages = [], multiple = false) => {
   const [images, setImages] = useState(initialImages);
   const [imageFiles, setImageFiles] = useState([]);
-
+  const [removedImages, setRemovedImages] = useState([]);
   const handleImage = (e) => {
     e.preventDefault();
     const selectedFiles = Array.from(e.target.files);
@@ -18,11 +17,11 @@ export const useImageUploader = (initialImages = [], multiple = false) => {
 
     for (const file of selectedFiles) {
       if (!isFileAllowed(file)) {
-        alert("Please choose PNG, JPG, or PDF files only.");
+        toast.error("Please choose PNG, JPG, or PDF files only.");
         continue;
       }
       if (file.size > 2 * 1024 * 1024) {
-        alert(`File ${file.name} exceeds 2MB. Skipping.`);
+        toast.error(`File ${file.name} exceeds 2MB. Skipping.`);
         continue;
       }
       validFiles.push(file);
@@ -55,11 +54,31 @@ export const useImageUploader = (initialImages = [], multiple = false) => {
   };
 
   const removeImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    const removedImg = images[index];
+    // If image is an existing DB image (string URL), mark it for deletion
+    if (typeof removedImg === "string" && removedImg.startsWith("http")) {
+      setRemovedImages((prev) => [...prev, removedImg]);
+      // Only remove from images array, don't touch imageFiles
+      setImages((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      // It's a newly uploaded image (data URL), remove from both arrays
+      // Calculate the actual index in imageFiles by counting non-URL images before this one
+      const imageFilesIndex = images
+        .slice(0, index)
+        .filter(
+          (img) => typeof img === "string" && img.startsWith("data:")
+        ).length;
+
+      setImages((prev) => prev.filter((_, i) => i !== index));
+      setImageFiles((prev) => prev.filter((_, i) => i !== imageFilesIndex));
+    }
   };
 
   const removeAllImages = () => {
+    const existingImages = images.filter(
+      (img) => typeof img === "string" && img.startsWith("http")
+    );
+    setRemovedImages((prev) => [...prev, ...existingImages]);
     setImages([]);
     setImageFiles([]);
   };
@@ -80,5 +99,6 @@ export const useImageUploader = (initialImages = [], multiple = false) => {
     removeImage,
     removeAllImages,
     setImages,
+    removedImages,
   };
 };

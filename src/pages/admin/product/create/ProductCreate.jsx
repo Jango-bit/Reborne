@@ -34,6 +34,7 @@ export const ProductCreate = () => {
     removeImage,
     removeAllImages,
     setImages,
+    removedImages,
   } = useImageUploader([], true);
   const { error, data } = useQuery({
     queryKey: ["productDetail", id],
@@ -69,6 +70,7 @@ export const ProductCreate = () => {
     for (let file of imageFiles) {
       formData.append("images", file);
     }
+    formData.append("removedImages", JSON.stringify(removedImages));
     id ? mutate({ formData, id }) : mutate({ formData });
   };
   useEffect(() => {
@@ -102,7 +104,7 @@ export const ProductCreate = () => {
         popupOpen={openCategoryPopup}
         setPopupOpen={setOpenCategoryPopup}
       />
-   
+
       <div className="flex flex-col  min-h-fit pb-5">
         <div className="text-zinc-800 flex items-center justify-between gap-3 border-b py-5 border-b-gray-200 text-base font-semibold">
           Create Product

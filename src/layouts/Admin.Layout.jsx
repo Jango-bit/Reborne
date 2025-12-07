@@ -39,7 +39,7 @@ export const AdminLayout = () => {
       icon: <LogOut size={20} />,
       onclick: () => {
         localStorage.clear();
-        window.location.href = "/auth/ogin"; // optional redirect
+        window.location.href = "/auth/login"; // optional redirect
       },
     },
   ];
