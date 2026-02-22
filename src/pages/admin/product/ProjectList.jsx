@@ -119,47 +119,54 @@ export const ProjectList = () => {
     ],
     [currentPage]
   );
+return (
+  <>
+    <DeleteConfirmation
+      popupOpen={openDeletePopup}
+      setPopupOpen={setOpenDeletePopup}
+      api={`${PRODUCTS}/${slug}`}
+      querykey={"productListing"}
+    />
 
-  return (
-    <>
-      <DeleteConfirmation
-        popupOpen={openDeletePopup}
-        setPopupOpen={setOpenDeletePopup}
-        api={`${PRODUCTS}/${slug}`}
-        querykey={"productListing"}
-      />
+    <div className="flex flex-col gap-4 pb-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b py-4 font-semibold">
+        <h3 className="text-lg">Products</h3>
 
-      <div className="flex flex-col gap-4 pb-5">
-        <div className="flex items-center justify-between border-b py-4 font-semibold">
-          <h3>Products</h3>
-          <Link
-            to="create"
-            className="flex items-center gap-2 rounded bg-black px-4 py-2 text-sm text-white"
-          >
-            <Plus size={16} />
-            Create
-          </Link>
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center py-20">
-            <img src="/loader/load.gif" className="h-10 w-10" />
-          </div>
-        ) : !list.length ? (
-          <NoData />
-        ) : (
-          <>
-            <QueryTable list={list} columns={columns} />
-            <div className="ml-auto">
-              <Pagination
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                totalPages={totalPages}
-              />
-            </div>
-          </>
-        )}
+        <Link
+          to="create"
+          className="flex items-center justify-center gap-2 rounded bg-black px-4 h-10 text-sm text-white w-full sm:w-auto"
+        >
+          <Plus size={16} />
+          Create
+        </Link>
       </div>
-    </>
-  );
+
+      {/* Content */}
+      {isLoading ? (
+        <div className="flex justify-center py-20">
+          <img src="/loader/load.gif" className="h-10 w-10" />
+        </div>
+      ) : !list.length ? (
+        <NoData />
+      ) : (
+        <>
+          {/* Table scroll wrapper */}
+          <div className="overflow-x-auto">
+            <QueryTable list={list} columns={columns} />
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-center sm:justify-end">
+            <Pagination
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              totalPages={totalPages}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  </>
+);
 };
