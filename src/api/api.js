@@ -3,6 +3,7 @@ import axios from "axios";
 const baseConfig = {
   baseURL: import.meta.env.VITE_BASE_URL,
 };
+console.log(baseConfig,"hsg")
 export const basicRequest = axios.create(baseConfig);
 
 export const basicXFormRequest = axios.create({
