@@ -44,11 +44,30 @@ export default function ProductPage() {
     );
   }
 
-  const phoneNumber = "917356179857";
-  const message = `👋 Hello! I'm interested in this product:\n\n🛍️ *${data?.name}*\n🏷️ Brand: ${data?.brand}\n💰 Price: ${data?.price}\n\nCan you share more details?`;
-  const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-    message
-  )}`;
+ const phoneNumber = "917356179857";
+
+const imageUrl = data?.images?.[0]?.url || "";
+
+const message = `✨ *PRODUCT ENQUIRY* ✨
+
+━━━━━━━━━━━━━━━
+🛍️ *${data?.name}*
+━━━━━━━━━━━━━━━
+
+🏷️ *Brand:* ${data?.brand}
+💰 *Price:* ₹${data?.price}
+
+📸 *Product Image*
+${imageUrl}
+
+📩 *Message:*
+Hi! I'm interested in this product.
+Could you please share more details? 😊
+`;
+
+const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+  message
+)}`;
 
   return (
     <div className="min-h-screen bg-linear-to-b from-neutral-100 via-white to-neutral-50 flex flex-col items-center justify-start px-4 sm:px-6 md:px-12 pt-28 pb-16 space-y-14">
