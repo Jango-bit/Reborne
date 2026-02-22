@@ -7,17 +7,21 @@ import {
   AlertTriangle,
   Package,
   GitBranch,
+  Menu,
+  X,
 } from "lucide-react";
-
-/* ===================== MAIN DASHBOARD ===================== */
 
 export const Dashboard = () => {
   const [activeLink, setActiveLink] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const SidebarLink = ({ name, icon: Icon, linkKey }) => (
     <button
-      onClick={() => setActiveLink(linkKey)}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition
+      onClick={() => {
+        setActiveLink(linkKey);
+        setSidebarOpen(false); // auto-close on mobile
+      }}
+      className={`flex items-center gap-2 px-4 py-3 rounded-lg w-full text-left
         ${
           activeLink === linkKey
             ? "bg-red-600 text-white"
@@ -30,15 +34,37 @@ export const Dashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex flex-col lg:flex-row max-w-7xl mx-auto">
-        {/* ================= SIDEBAR ================= */}
-        <aside className="lg:w-64 bg-white border-b lg:border-b-0 lg:border-r sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      {/* ===== MOBILE TOP BAR ===== */}
+      <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b sticky top-0 z-40">
+        <button onClick={() => setSidebarOpen(true)}>
+          <Menu size={24} />
+        </button>
+        <span className="font-semibold">Admin</span>
+      </div>
+
+      <div className="flex max-w-7xl mx-auto">
+        {/* ===== SIDEBAR ===== */}
+        <aside
+          className={`
+            fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r
+            transform transition-transform duration-300
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            lg:translate-x-0
+          `}
+        >
+          {/* Mobile close */}
+          <div className="lg:hidden flex justify-end p-4">
+            <button onClick={() => setSidebarOpen(false)}>
+              <X size={22} />
+            </button>
+          </div>
+
           <div className="p-4 font-bold text-red-600 hidden lg:block">
             Admin Menu
           </div>
 
-          <div className="flex lg:flex-col gap-2 overflow-x-auto p-3">
+          <nav className="flex flex-col gap-2 px-3">
             <SidebarLink
               name="Dashboard"
               icon={LayoutDashboard}
@@ -47,48 +73,55 @@ export const Dashboard = () => {
             <SidebarLink name="Products" icon={Package} linkKey="products" />
             <SidebarLink name="Category" icon={GitBranch} linkKey="category" />
             <SidebarLink name="Users" icon={User} linkKey="users" />
-            <SidebarLink name="Alerts" icon={AlertTriangle} linkKey="alerts" />
-          </div>
+            <SidebarLink
+              name="Alerts"
+              icon={AlertTriangle}
+              linkKey="alerts"
+            />
+          </nav>
         </aside>
 
-        {/* ================= CONTENT ================= */}
-        <main className="flex-1 p-4 sm:p-6">
+        {/* ===== BACKDROP (mobile) ===== */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          />
+        )}
+
+        {/* ===== CONTENT ===== */}
+        <main className="flex-1 min-w-0 p-4 sm:p-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-700 flex items-center gap-2 mb-6">
             <Lock size={26} />
             Admin Panel
-            <span className="text-sm sm:text-base text-gray-500">
+            <span className="text-sm text-gray-500 hidden sm:inline">
               / {activeLink}
             </span>
           </h1>
 
-          {/* ================= DASHBOARD ================= */}
           {activeLink === "dashboard" ? (
             <>
-              {/* KPI Cards */}
+              {/* Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-                <DashboardCard
-                  title="Users"
-                  value="4,521"
-                  icon={<User className="text-red-600" />}
-                />
+                <DashboardCard title="Users" value="4,521" icon={<User />} />
                 <DashboardCard
                   title="Revenue"
                   value="₹1.2M"
-                  icon={<TrendingUp className="text-green-600" />}
+                  icon={<TrendingUp />}
                 />
                 <DashboardCard
                   title="Pending Orders"
                   value="12"
-                  icon={<Package className="text-yellow-600" />}
+                  icon={<Package />}
                 />
                 <DashboardCard
                   title="Low Stock"
                   value="89"
-                  icon={<AlertTriangle className="text-red-600" />}
+                  icon={<AlertTriangle />}
                 />
               </div>
 
-              {/* Charts + Activity */}
+              {/* Content */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white p-5 rounded-xl shadow">
                   <h2 className="font-semibold mb-4 flex items-center gap-2">
@@ -117,7 +150,7 @@ export const Dashboard = () => {
   );
 };
 
-/* ===================== COMPONENTS ===================== */
+/* ===== Components ===== */
 
 const DashboardCard = ({ title, value, icon }) => (
   <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">

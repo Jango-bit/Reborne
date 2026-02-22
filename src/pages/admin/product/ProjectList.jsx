@@ -37,136 +37,105 @@ export const ProjectList = () => {
     () => [
       {
         header: "Sl No",
-        accessorKey: "slno",
         cell: ({ row }) =>
           currentPage * pageLimit - (pageLimit - (row.index + 1)),
       },
-
-      // ✅ IMAGE COLUMN (FIXED)
       {
         header: "Image",
-        accessorKey: "images",
         cell: ({ row }) => {
           const img = row?.original?.images?.[0];
           return img?.url ? (
             <img
               src={img.url}
-              alt={img.alt || row.original.name}
+              alt={row.original.name}
               className="h-14 w-14 object-cover rounded border"
-              loading="lazy"
             />
           ) : (
             <span className="text-xs text-gray-400">No Image</span>
           );
         },
       },
-
-      {
-        header: "Name",
-        accessorKey: "name",
-      },
-      {
-        header: "Description",
-        accessorKey: "description",
-      },
-      {
-        header: "Brand",
-        accessorKey: "brand",
-      },
-      {
-        header: "Category",
-        accessorKey: "category.name",
-      },
-      {
-        header: "Price",
-        accessorKey: "price",
-      },
-      {
-        header: "Stock",
-        accessorKey: "countInStock",
-      },
-      {
-        header: "Rating",
-        accessorKey: "rating",
-      },
-      {
-        header: "Reviews",
-        accessorKey: "numReviews",
-      },
+      { header: "Name", accessorKey: "name" },
+      { header: "Description", accessorKey: "description" },
+      { header: "Brand", accessorKey: "brand" },
+      { header: "Category", accessorKey: "category.name" },
+      { header: "Price", accessorKey: "price" },
+      { header: "Stock", accessorKey: "countInStock" },
+      { header: "Rating", accessorKey: "rating" },
+      { header: "Reviews", accessorKey: "numReviews" },
       {
         header: "Action",
-        accessorKey: "action",
         cell: ({ row }) => (
           <div className="flex gap-2">
             <Link
               to={`/admin/product/edit/${row.original._id}`}
-              className="flex h-8 w-8 items-center justify-center rounded bg-gray-100 hover:shadow"
+              className="flex h-9 w-9 items-center justify-center rounded bg-gray-100"
             >
               <Pencil size={16} />
             </Link>
-            <div
+            <button
               onClick={() => {
                 setSlug(row.original._id);
                 setOpenDeletePopup(true);
               }}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded bg-gray-100 hover:shadow"
+              className="flex h-9 w-9 items-center justify-center rounded bg-gray-100"
             >
               <Trash2 size={16} className="text-red-600" />
-            </div>
+            </button>
           </div>
         ),
       },
     ],
     [currentPage]
   );
-return (
-  <>
-    <DeleteConfirmation
-      popupOpen={openDeletePopup}
-      setPopupOpen={setOpenDeletePopup}
-      api={`${PRODUCTS}/${slug}`}
-      querykey={"productListing"}
-    />
 
-    <div className="flex flex-col gap-4 pb-5">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b py-4 font-semibold">
-        <h3 className="text-lg">Products</h3>
+  return (
+    <>
+      <DeleteConfirmation
+        popupOpen={openDeletePopup}
+        setPopupOpen={setOpenDeletePopup}
+        api={`${PRODUCTS}/${slug}`}
+        querykey="productListing"
+      />
 
-        <Link
-          to="create"
-          className="flex items-center justify-center gap-2 rounded bg-black px-4 h-10 text-sm text-white w-full sm:w-auto"
-        >
-          <Plus size={16} />
-          Create
-        </Link>
-      </div>
+      {/* 🔥 THIS min-w-0 IS THE MAGIC */}
+      <div className="flex-1 min-w-0 flex flex-col gap-4 pb-5">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b py-4 font-semibold">
+          <h3 className="text-lg">Products</h3>
 
-      {/* Content */}
-      {isLoading ? (
-        <div className="flex justify-center py-20">
-          <img src="/loader/load.gif" className="h-10 w-10" />
+          <Link
+            to="create"
+            className="flex items-center justify-center gap-2 rounded bg-black px-4 h-10 text-sm text-white w-full sm:w-auto"
+          >
+            <Plus size={16} />
+            Create
+          </Link>
         </div>
-      ) : !list.length ? (
-        <NoData />
-      ) : (
-        <>
-          {/* Table scroll wrapper */}
-          <div className="overflow-x-auto">
-            <QueryTable list={list} columns={columns} />
-          </div>
 
-          {/* Pagination */}
-          <div className="flex justify-center sm:justify-end">
-            <Pagination
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              totalPages={totalPages}
-            />
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <img src="/loader/load.gif" className="h-10 w-10" />
           </div>
-        </>
-      )}
-    </div>
-  </>
-);
+        ) : !list.length ? (
+          <NoData />
+        ) : (
+          <>
+            {/* ✅ Horizontal scroll only */}
+            <div className="w-full overflow-x-auto">
+              <QueryTable list={list} columns={columns} />
+            </div>
+
+            <div className="flex justify-center sm:justify-end">
+              <Pagination
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                totalPages={totalPages}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
 };
