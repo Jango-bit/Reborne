@@ -22,7 +22,7 @@ export const CategoryList = () => {
     queryFn: () =>
       newRequest.get(CATEGORY, {
         params: { limit: pageLimit, page: currentPage },
-      }).then(res => res?.data),
+      }).then((res) => res?.data),
     staleTime: 0,
     cacheTime: 0,
   });
@@ -36,37 +36,46 @@ export const CategoryList = () => {
   const columns = useMemo(
     () => [
       {
-        header: "Sl no",
+        header: "Sl No",
         accessorKey: "id",
         cell: ({ row }) =>
-          currentPage * pageLimit - (pageLimit - (parseInt(row?.id) + 1)),
+          currentPage * pageLimit - (pageLimit - (parseInt(row.id) + 1)),
       },
       { header: "Name", accessorKey: "name" },
-      { header: "Description", accessorKey: "description" },
+      {
+        header: "Description",
+        accessorKey: "description",
+        cell: ({ getValue }) => (
+          <span className="line-clamp-2 max-w-xs block">
+            {getValue()}
+          </span>
+        ),
+      },
       { header: "Slug", accessorKey: "slug" },
       {
         header: "Action",
         accessorKey: "action",
         cell: ({ row }) => (
-          <div className="flex gap-3">
-            <div
+          <div className="flex gap-2">
+            <button
               onClick={() => {
-                setSlug(row?.original);
+                setSlug(row.original);
                 setOpenCategoryPopup(true);
               }}
-              className="flex h-10 w-10 sm:h-8 sm:w-8 cursor-pointer items-center justify-center rounded bg-[#F5F5F5] transition hover:shadow"
+              className="flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded bg-[#F5F5F5] hover:shadow transition"
             >
-              <Pencil size={18} />
-            </div>
-            <div
+              <Pencil size={16} />
+            </button>
+
+            <button
               onClick={() => {
-                setSlug(row?.original?._id);
+                setSlug(row.original._id);
                 setOpenDeletePopup(true);
               }}
-              className="flex h-10 w-10 sm:h-8 sm:w-8 cursor-pointer items-center justify-center rounded bg-[#F5F5F5] transition hover:shadow"
+              className="flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded bg-[#F5F5F5] hover:shadow transition"
             >
-              <Trash2 size={18} className="text-red-600" />
-            </div>
+              <Trash2 size={16} className="text-red-600" />
+            </button>
           </div>
         ),
       },
@@ -76,6 +85,7 @@ export const CategoryList = () => {
 
   return (
     <>
+      {/* Create / Edit Popup */}
       <CreateCategory
         popupOpen={openCategoryPopup}
         setPopupOpen={setOpenCategoryPopup}
@@ -83,6 +93,7 @@ export const CategoryList = () => {
         slug={slug}
       />
 
+      {/* Delete Popup */}
       <DeleteConfirmation
         popupOpen={openDeletePopup}
         setPopupOpen={setOpenDeletePopup}
@@ -90,10 +101,12 @@ export const CategoryList = () => {
         querykey="categoryListing"
       />
 
-      <div className="flex flex-col gap-4 pb-5">
-        {/* Header */}
+      <div className="flex flex-col gap-4 pb-5 w-full">
+        {/* ===== HEADER ===== */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b py-4">
-          <h3 className="text-zinc-800 text-base font-semibold">Category</h3>
+          <h3 className="text-zinc-800 text-base font-semibold">
+            Category
+          </h3>
 
           <button
             onClick={() => setOpenCategoryPopup(true)}
@@ -104,7 +117,7 @@ export const CategoryList = () => {
           </button>
         </div>
 
-        {/* Content */}
+        {/* ===== CONTENT ===== */}
         {isLoading ? (
           <div className="flex mt-24 justify-center">
             <img src="/loader/load.gif" className="h-10 w-10" />
@@ -113,13 +126,15 @@ export const CategoryList = () => {
           <NoData />
         ) : (
           <>
-            {/* Table scroll for mobile */}
-            <div className="overflow-x-auto">
-              <QueryTable list={list} columns={columns} />
+            {/* ===== TABLE (SCROLL ON MOBILE) ===== */}
+            <div className="w-full overflow-x-auto rounded-lg border">
+              <div className="min-w-[700px]">
+                <QueryTable list={list} columns={columns} />
+              </div>
             </div>
 
-            {/* Pagination */}
-            <div className="flex justify-center sm:justify-end">
+            {/* ===== PAGINATION ===== */}
+            <div className="flex justify-center sm:justify-end mt-4">
               <Pagination
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}

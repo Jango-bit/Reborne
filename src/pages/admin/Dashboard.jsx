@@ -19,9 +19,9 @@ export const Dashboard = () => {
     <button
       onClick={() => {
         setActiveLink(linkKey);
-        setSidebarOpen(false); // auto-close on mobile
+        setSidebarOpen(false);
       }}
-      className={`flex items-center gap-2 px-4 py-3 rounded-lg w-full text-left
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left transition
         ${
           activeLink === linkKey
             ? "bg-red-600 text-white"
@@ -34,16 +34,17 @@ export const Dashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="min-h-screen w-full bg-gray-50 overflow-x-hidden">
       {/* ===== MOBILE TOP BAR ===== */}
       <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b sticky top-0 z-40">
         <button onClick={() => setSidebarOpen(true)}>
           <Menu size={24} />
         </button>
-        <span className="font-semibold">Admin</span>
+        <span className="font-semibold">Admin Panel</span>
       </div>
 
-      <div className="flex max-w-7xl mx-auto">
+      {/* ===== MAIN LAYOUT (NO max-width) ===== */}
+      <div className="flex w-full">
         {/* ===== SIDEBAR ===== */}
         <aside
           className={`
@@ -53,7 +54,7 @@ export const Dashboard = () => {
             lg:translate-x-0
           `}
         >
-          {/* Mobile close */}
+          {/* Close button (mobile) */}
           <div className="lg:hidden flex justify-end p-4">
             <button onClick={() => setSidebarOpen(false)}>
               <X size={22} />
@@ -64,14 +65,22 @@ export const Dashboard = () => {
             Admin Menu
           </div>
 
-          <nav className="flex flex-col gap-2 px-3">
+          <nav className="flex flex-col gap-1 px-3">
             <SidebarLink
               name="Dashboard"
               icon={LayoutDashboard}
               linkKey="dashboard"
             />
-            <SidebarLink name="Products" icon={Package} linkKey="products" />
-            <SidebarLink name="Category" icon={GitBranch} linkKey="category" />
+            <SidebarLink
+              name="Products"
+              icon={Package}
+              linkKey="products"
+            />
+            <SidebarLink
+              name="Category"
+              icon={GitBranch}
+              linkKey="category"
+            />
             <SidebarLink name="Users" icon={User} linkKey="users" />
             <SidebarLink
               name="Alerts"
@@ -81,7 +90,7 @@ export const Dashboard = () => {
           </nav>
         </aside>
 
-        {/* ===== BACKDROP (mobile) ===== */}
+        {/* ===== BACKDROP (MOBILE) ===== */}
         {sidebarOpen && (
           <div
             onClick={() => setSidebarOpen(false)}
@@ -91,7 +100,7 @@ export const Dashboard = () => {
 
         {/* ===== CONTENT ===== */}
         <main className="flex-1 min-w-0 p-4 sm:p-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-700 flex items-center gap-2 mb-6">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-700 flex items-center gap-2 mb-6">
             <Lock size={26} />
             Admin Panel
             <span className="text-sm text-gray-500 hidden sm:inline">
@@ -101,8 +110,8 @@ export const Dashboard = () => {
 
           {activeLink === "dashboard" ? (
             <>
-              {/* Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              {/* ===== STATS CARDS ===== */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <DashboardCard title="Users" value="4,521" icon={<User />} />
                 <DashboardCard
                   title="Revenue"
@@ -121,7 +130,7 @@ export const Dashboard = () => {
                 />
               </div>
 
-              {/* Content */}
+              {/* ===== MAIN GRID ===== */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white p-5 rounded-xl shadow">
                   <h2 className="font-semibold mb-4 flex items-center gap-2">
@@ -150,20 +159,20 @@ export const Dashboard = () => {
   );
 };
 
-/* ===== Components ===== */
+/* ===== SMALL COMPONENTS ===== */
 
 const DashboardCard = ({ title, value, icon }) => (
-  <div className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+  <div className="bg-white p-4 sm:p-5 rounded-xl shadow hover:shadow-lg transition">
     <div className="flex justify-between items-center">
       <p className="text-sm text-gray-500">{title}</p>
       {icon}
     </div>
-    <p className="text-3xl font-bold mt-2">{value}</p>
+    <p className="text-2xl sm:text-3xl font-bold mt-2">{value}</p>
   </div>
 );
 
 const StaticSalesChart = () => (
-  <div className="h-56 flex items-end gap-2 border-b border-l p-2">
+  <div className="h-48 sm:h-56 flex items-end gap-2 border-b border-l p-2">
     {[40, 65, 80, 50, 95, 70].map((v, i) => (
       <div
         key={i}
@@ -175,8 +184,12 @@ const StaticSalesChart = () => (
 );
 
 const Placeholder = ({ title }) => (
-  <div className="bg-white p-8 rounded-xl shadow text-center">
-    <h2 className="text-xl font-bold capitalize">{title} Module</h2>
-    <p className="text-gray-500 mt-2">This section is under construction.</p>
+  <div className="bg-white p-6 sm:p-8 rounded-xl shadow text-center">
+    <h2 className="text-lg sm:text-xl font-bold capitalize">
+      {title} Module
+    </h2>
+    <p className="text-gray-500 mt-2">
+      This section is under construction.
+    </p>
   </div>
 );
